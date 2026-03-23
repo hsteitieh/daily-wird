@@ -1,0 +1,270 @@
+{
+  "name": "الورد اليومي",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "sendPhoto",
+        "chatId": "-4949129042",
+        "binaryData": true,
+        "additionalFields": {
+          "caption": "={{ $('Day parse').item.json.dateText }} صفحة {{ $('Pull pages').item.json.page }}\n"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1040,
+        -176
+      ],
+      "id": "2bbfd3da-bf7b-4cf6-b867-a12dbb30a48b",
+      "name": "Send a photo message",
+      "webhookId": "2da212e0-ac52-457a-a0c5-118ab637ab0d",
+      "credentials": {
+        "telegramApi": {
+          "id": "ZKnG1KzQLB6EgMa3",
+          "name": "الورد اليومي"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -448,
+        -176
+      ],
+      "id": "0a028a64-9ca3-46b5-9f16-3e64e460e504",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Arabic weekdays\nconst arabicDays = [\n  \"الأحد\",\n  \"الإثنين\",\n  \"الثلاثاء\",\n  \"الأربعاء\",\n  \"الخميس\",\n  \"الجمعة\",\n  \"السبت\"\n];\n\n// get current day index (0 = Sunday)\nconst today = new Date();\nconst dayIndex = today.getDay(); \n\n// build string\nconst output = `ورد اليوم ${arabicDays[dayIndex]}`;\n\n// return JSON\nreturn [{ json: { dateText: output } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -192,
+        -176
+      ],
+      "id": "9764e633-5778-4273-a3eb-34881b7e102a",
+      "name": "Day parse"
+    },
+    {
+      "parameters": {
+        "jsCode": "const totalPages = 604;\n// Default to 604 if no value found, so the next run starts at 1\nlet lastPage = parseInt($json.PageNumber || 604); \n\n// Increment pages\nlet firstPage = lastPage + 1;\nlet secondPage = lastPage + 2;\n\n// Reset logic: If page > 604, wrap around using modulo\n// If (605 % 604) = 1. If (606 % 604) = 2.\nif (firstPage > totalPages) {\n    firstPage = ((firstPage - 1) % totalPages) + 1;\n}\n\nif (secondPage > totalPages) {\n    secondPage = ((secondPage - 1) % totalPages) + 1;\n}\n\nconst pages = [firstPage, secondPage].map(p => {\n  return {\n    json: {\n      page: p,\n      url: `https://raw.githubusercontent.com/QuranHub/quran-pages-images/main/easyquran.com/hafs-tajweed/${p}.jpg`,\n      newLastPage: secondPage // This will be saved for the next run\n    }\n  };\n});\n\nreturn pages;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        272,
+        -176
+      ],
+      "id": "148a0a76-7584-4c81-9896-2a18f26ee749",
+      "name": "Pull pages"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "tQfJBOZfPvdbsvXv",
+          "mode": "list",
+          "cachedResultName": "الورد اليومي",
+          "cachedResultUrl": "/projects/OjIGRM7XxlrxNy9W/datatables/tQfJBOZfPvdbsvXv"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "PageNumber",
+              "condition": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        16,
+        -176
+      ],
+      "id": "58a65429-d89b-41ad-91b2-30bad1db9f26",
+      "name": "Get row(s)"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "tQfJBOZfPvdbsvXv",
+          "mode": "list",
+          "cachedResultName": "الورد اليومي",
+          "cachedResultUrl": "/projects/OjIGRM7XxlrxNy9W/datatables/tQfJBOZfPvdbsvXv"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "PageNumber",
+              "condition": "lte",
+              "keyValue": "=604"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "PageNumber": "={{ $json.newLastPage }}"
+          },
+          "matchingColumns": [
+            "PageNumber"
+          ],
+          "schema": [
+            {
+              "id": "PageNumber",
+              "displayName": "PageNumber",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        512,
+        -176
+      ],
+      "id": "fd9db624-4375-48c7-b81e-31a9a01afea0",
+      "name": "Update row(s)"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Pull pages').item.json.url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        784,
+        -176
+      ],
+      "id": "08f6598d-47d1-49ec-8421-4eb93ccb67ad",
+      "name": "صفحات القرآن"
+    }
+  ],
+  "pinData": {
+    "Schedule Trigger": [
+      {
+        "json": {
+          "timestamp": "2025-10-11T08:00:20.010+03:00",
+          "Readable date": "October 11th 2025, 8:00:20 am",
+          "Readable time": "8:00:20 am",
+          "Day of week": "Saturday",
+          "Year": "2025",
+          "Month": "October",
+          "Day of month": "11",
+          "Hour": "08",
+          "Minute": "00",
+          "Second": "20",
+          "Timezone": "Asia/Amman (UTC+03:00)"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Day parse",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Day parse": {
+      "main": [
+        [
+          {
+            "node": "Get row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pull pages": {
+      "main": [
+        [
+          {
+            "node": "Update row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)": {
+      "main": [
+        [
+          {
+            "node": "Pull pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row(s)": {
+      "main": [
+        [
+          {
+            "node": "صفحات القرآن",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "صفحات القرآن": {
+      "main": [
+        [
+          {
+            "node": "Send a photo message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "ZgHNmtkmShNGNusF"
+  },
+  "versionId": "48727a63-06e2-4981-ac4b-a73d838099fa",
+  "meta": {
+    "instanceId": "a9dd966390709523d0b4375034c8d3b1321332f224d57753c4f4e7e5856e81bb"
+  },
+  "id": "DP1iuOA5hTtZL7Yd",
+  "tags": []
+}
