@@ -4,16 +4,16 @@ This n8n workflow handles the daily Quran wird by sending 2 Quran pages to a Tel
 
 ---
 
-## 🤖 What This Workflow Does:
+## What This Workflow Does:
 
 * **Data Table:** Acts as a memory to save the last Quran page sent.
 * **Telegram:** Sends daily Quran wird to a Telegram Channel.
 
 ---
 
-## ⚙️ How To Set This Up:
+##  How To Set This Up:
 
-### 📥 After You Import the JSON File to Your n8n:
+###  After You Import the JSON File to Your n8n:
 
 #### 1. Schedule Trigger
 Change the date and time to a suitable one.
@@ -26,7 +26,7 @@ Create a native n8n table with the following:
 
 #### 3. Telegram Bot Credentials
 Add your Telegram chat bot credentials to n8n using the official documentation:
-👉 [n8n Telegram Setup Guide](https://docs.n8n.io/integrations/builtin/credentials/telegram/#using-api-bot-access-token)
+ [n8n Telegram Setup Guide](https://docs.n8n.io/integrations/builtin/credentials/telegram/#using-api-bot-access-token)
 
 #### 4. Get Channel ID
 Add your bot to your target Telegram channel as an Administrator and retrieve the **Channel ID**.
