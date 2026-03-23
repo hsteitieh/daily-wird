@@ -24,14 +24,19 @@ Create a native n8n table with the following:
 * **Column:** Named `PageNumber` (Number type).
 * **Initial Row:** Add one row that starts with `0`.
 
-#### 3. Telegram Bot Credentials
+#### 3. (Optional) Adjust Number of Pages
+Click on the Settings node
+* **pagesToIncrement:** Change it to number of pages you want to read daily.
+> **Note:** Defaults to 2 pages daily.
+
+#### 4. Telegram Bot Credentials
 Add your Telegram chat bot credentials to n8n using the official documentation:
  [n8n Telegram Setup Guide](https://docs.n8n.io/integrations/builtin/credentials/telegram/#using-api-bot-access-token)
 
-#### 4. Get Channel ID
+#### 5. Get Channel ID
 Add your bot to your target Telegram channel as an Administrator and retrieve the **Channel ID**.
 
-#### 5. Finalize Node Settings
+#### 6. Finalize Node Settings
 * Apply the created **Credentials** to the Telegram Node.
 * Paste your **Channel ID** into the Chat ID field of the Telegram Node.
 
